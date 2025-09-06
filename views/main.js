@@ -109,15 +109,15 @@ async function cargarEncuesta() {
 
 function mostrarEncuesta(encuesta) {
     // Mostrar título y descripción
-    document.getElementById('titulo-encuesta').textContent = encuesta.titulo || 'Encuesta sin título';
-    document.getElementById('descripcion-encuesta').textContent = encuesta.descripcion || 'Sin descripción';
+    document.getElementById('titulo-encuesta').textContent = encuesta.Nombre || 'Encuesta sin título';
+    document.getElementById('descripcion-encuesta').textContent = encuesta.Descripcion || 'Sin descripción';
     
     // Generar preguntas
     const preguntasContainer = document.getElementById('preguntas-container');
     preguntasContainer.innerHTML = '';
     
-    if (encuesta.preguntas && encuesta.preguntas.length > 0) {
-        encuesta.preguntas.forEach((pregunta, index) => {
+    if (encuesta.Preguntas && encuesta.Preguntas.length > 0) {
+        encuesta.Preguntas.forEach((pregunta, index) => {
             const preguntaElement = crearElementoPregunta(pregunta, index);
             preguntasContainer.appendChild(preguntaElement);
         });
@@ -134,26 +134,26 @@ function crearElementoPregunta(pregunta, index) {
     div.className = 'pregunta';
     
     const titulo = document.createElement('h4');
-    titulo.textContent = `${index + 1}. ${pregunta.texto || pregunta.pregunta || 'Pregunta sin texto'}`;
+    titulo.textContent = `${index + 1}. ${pregunta.TextoPregunta || 'Pregunta sin texto'}`;
     div.appendChild(titulo);
     
     const opciones = document.createElement('div');
     opciones.className = 'opciones';
     
-    if (pregunta.opciones && pregunta.opciones.length > 0) {
-        pregunta.opciones.forEach((opcion, opcionIndex) => {
+    if (pregunta.Opciones && pregunta.Opciones.length > 0) {
+        pregunta.Opciones.forEach((opcion, opcionIndex) => {
             const opcionDiv = document.createElement('div');
             opcionDiv.className = 'opcion';
             
             const radio = document.createElement('input');
             radio.type = 'radio';
-            radio.name = `pregunta_${pregunta.id || index}`;
-            radio.value = opcion.id || opcionIndex;
-            radio.id = `pregunta_${pregunta.id || index}_opcion_${opcion.id || opcionIndex}`;
+            radio.name = `pregunta_${pregunta.PreguntaID}`;
+            radio.value = opcion.OpcionID;
+            radio.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
             
             const label = document.createElement('label');
             label.htmlFor = radio.id;
-            label.textContent = opcion.texto || opcion.opcion || 'Opción sin texto';
+            label.textContent = opcion.TextoOpcion || 'Opción sin texto';
             
             opcionDiv.appendChild(radio);
             opcionDiv.appendChild(label);
@@ -189,14 +189,14 @@ async function enviarRespuestas(event) {
     btnEnviar.disabled = true;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/encuestas/responder`, {
+        const response = await fetch(`${API_BASE_URL}/respuestas`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                encuestaId: encuestaActual.id,
-                respuestas: respuestas
+                EncuestaID: encuestaActual.EncuestaID,
+                Respuestas: respuestas
             })
         });
         
@@ -223,18 +223,18 @@ async function enviarRespuestas(event) {
 function recopilarRespuestas() {
     const respuestas = [];
     
-    if (!encuestaActual || !encuestaActual.preguntas) {
+    if (!encuestaActual || !encuestaActual.Preguntas) {
         return respuestas;
     }
     
-    encuestaActual.preguntas.forEach((pregunta, index) => {
-        const preguntaId = pregunta.id || index;
+    encuestaActual.Preguntas.forEach((pregunta, index) => {
+        const preguntaId = pregunta.PreguntaID;
         const radioSeleccionado = document.querySelector(`input[name="pregunta_${preguntaId}"]:checked`);
         
         if (radioSeleccionado) {
             respuestas.push({
-                preguntaId: preguntaId,
-                opcionId: radioSeleccionado.value
+                PreguntaID: preguntaId,
+                OpcionID: parseInt(radioSeleccionado.value)
             });
         }
     });
@@ -413,53 +413,21 @@ function cerrarModal() {
 
 // Función para simular datos cuando la API no esté disponible
 function simularDatosEncuesta(id) {
+    // Devolver la encuesta proporcionada por el usuario, ignorando el ID.
     return {
-        id: id,
-        titulo: `Encuesta de Satisfacción ${id}`,
-        descripcion: 'Esta es una encuesta de ejemplo para probar la funcionalidad del sistema.',
-        preguntas: [
-            {
-                id: 1,
-                texto: '¿Cómo calificarías nuestro servicio?',
-                opciones: [
-                    { id: 1, texto: 'Excelente' },
-                    { id: 2, texto: 'Bueno' },
-                    { id: 3, texto: 'Regular' },
-                    { id: 4, texto: 'Malo' }
-                ]
-            },
-            {
-                id: 2,
-                texto: '¿Recomendarías nuestros servicios?',
-                opciones: [
-                    { id: 1, texto: 'Definitivamente sí' },
-                    { id: 2, texto: 'Probablemente sí' },
-                    { id: 3, texto: 'Probablemente no' },
-                    { id: 4, texto: 'Definitivamente no' }
-                ]
-            }
-        ]
+      "EncuestaID": 1,
+      "Nombre": "Encuesta de Conocimiento y Dominio",
+      "Descripcion": "Evalúa si el catedrático demuestra dominio y usa recursos adecuados.",
+      "Preguntas": [{"PreguntaID":1,"TextoPregunta":"¿Qué recursos tecnológicos brinda el catedrático para impartir el curso?","Opciones":[{"OpcionID":1,"TextoOpcion":"Ejercicios prácticos resueltos"},{"OpcionID":2,"TextoOpcion":"Presentaciones y diapositivas"},{"OpcionID":3,"TextoOpcion":"Recursos tecnológicos como APIs o simuladores"},{"OpcionID":4,"TextoOpcion":"Videos explicativos"},{"OpcionID":5,"TextoOpcion":"Foros o plataformas de discusión"},{"OpcionID":6,"TextoOpcion":"No brinda nada"},{"OpcionID":91,"TextoOpcion":"Aplicaciones de ejemplo"}]},{"PreguntaID":2,"TextoPregunta":"¿Qué estrategias usa para explicar los temas?","Opciones":[{"OpcionID":7,"TextoOpcion":"Ejemplos prácticos en clase"},{"OpcionID":8,"TextoOpcion":"Analogías y casos reales"},{"OpcionID":9,"TextoOpcion":"Demostraciones en vivo"},{"OpcionID":10,"TextoOpcion":"Material escrito complementario"},{"OpcionID":11,"TextoOpcion":"Sesiones grabadas"},{"OpcionID":12,"TextoOpcion":"No utiliza ninguna estrategia clara"}]},{"PreguntaID":3,"TextoPregunta":"¿Qué materiales de apoyo entrega en clase?","Opciones":[{"OpcionID":13,"TextoOpcion":"Guías de estudio"},{"OpcionID":14,"TextoOpcion":"Banco de ejercicios"},{"OpcionID":15,"TextoOpcion":"Manuales o tutoriales"},{"OpcionID":16,"TextoOpcion":"Acceso a bibliografía digital"},{"OpcionID":17,"TextoOpcion":"Plantillas de trabajo"},{"OpcionID":18,"TextoOpcion":"No entrega materiales"}]},{"PreguntaID":4,"TextoPregunta":"¿Qué herramientas usa para evaluar el aprendizaje?","Opciones":[{"OpcionID":19,"TextoOpcion":"Exámenes cortos"},{"OpcionID":20,"TextoOpcion":"Quices prácticos en clase"},{"OpcionID":21,"TextoOpcion":"Trabajos de investigación"},{"OpcionID":22,"TextoOpcion":"Evaluaciones con software especializado"},{"OpcionID":23,"TextoOpcion":"Rúbricas de evaluación claras"},{"OpcionID":24,"TextoOpcion":"No utiliza herramientas de evaluación"}]},{"PreguntaID":5,"TextoPregunta":"¿Qué medios utiliza para mantener actualizados los contenidos?","Opciones":[{"OpcionID":25,"TextoOpcion":"Lecturas recientes de la materia"},{"OpcionID":26,"TextoOpcion":"Enlaces a artículos académicos"},{"OpcionID":27,"TextoOpcion":"Uso de software actualizado"},{"OpcionID":28,"TextoOpcion":"Referencias a normativas vigentes"},{"OpcionID":29,"TextoOpcion":"Comparación con tendencias actuales"},{"OpcionID":30,"TextoOpcion":"No actualiza los contenidos"}]}]
     };
 }
 
 function simularDatosResultados(id) {
+    // Devuelve un conjunto de resultados vacío para la simulación.
     return {
         id: id,
         titulo: `Resultados de Encuesta ${id}`,
-        resultados: [
-            {
-                pregunta: '¿Cómo calificarías nuestro servicio?',
-                porcentaje: 75,
-                respuestasPositivas: 15,
-                totalRespuestas: 20
-            },
-            {
-                pregunta: '¿Recomendarías nuestros servicios?',
-                porcentaje: 45,
-                respuestasPositivas: 9,
-                totalRespuestas: 20
-            }
-        ]
+        resultados: []
     };
 }
 
