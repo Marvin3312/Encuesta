@@ -274,7 +274,6 @@ function recopilarRespuestas() {
 
         seleccionados.forEach((input) => {
             respuestas.push({
-                PreguntaID: preguntaId,
                 OpcionID: parseInt(input.value),
                 Seleccionado: 1
             });
