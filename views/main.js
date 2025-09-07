@@ -53,7 +53,6 @@ function inicializarEventListeners() {
             cargarResultados();
         }
     });
-
 }
 
 // Navegación entre secciones
@@ -152,32 +151,34 @@ function crearElementoPregunta(pregunta, index) {
     const div = document.createElement('div');
     div.className = 'pregunta';
 
-    // Título de la pregunta
     const titulo = document.createElement('h4');
     titulo.textContent = `${index + 1}. ${pregunta.TextoPregunta || 'Pregunta sin texto'}`;
     div.appendChild(titulo);
 
-    // Contenedor de opciones
     const opciones = document.createElement('div');
     opciones.className = 'opciones';
 
     if (pregunta.Opciones && pregunta.Opciones.length > 0) {
+        // Determinar tipo de input según pregunta.Tipo
+        // 'multiple' = checkbox, 'unica' = radio (por defecto)
+        const tipoInput = pregunta.Tipo === 'multiple' ? 'checkbox' : 'radio';
+        const nameAttr = tipoInput === 'checkbox' ? `pregunta_${pregunta.PreguntaID}[]` : `pregunta_${pregunta.PreguntaID}`;
+
         pregunta.Opciones.forEach((opcion) => {
             const opcionDiv = document.createElement('div');
             opcionDiv.className = 'opcion';
 
-            // Checkbox correcto para selección múltiple
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = `pregunta_${pregunta.PreguntaID}[]`; // permite múltiples
-            checkbox.value = opcion.OpcionID;
-            checkbox.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
+            const input = document.createElement('input');
+            input.type = tipoInput;
+            input.name = nameAttr;
+            input.value = opcion.OpcionID;
+            input.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
 
             const label = document.createElement('label');
-            label.htmlFor = checkbox.id;
+            label.htmlFor = input.id;
             label.textContent = opcion.TextoOpcion || 'Opción sin texto';
 
-            opcionDiv.appendChild(checkbox);
+            opcionDiv.appendChild(input);
             opcionDiv.appendChild(label);
             opciones.appendChild(opcionDiv);
         });
@@ -187,25 +188,6 @@ function crearElementoPregunta(pregunta, index) {
 
     div.appendChild(opciones);
     return div;
-}
-
-function recopilarRespuestas() {
-    const respuestas = [];
-
-    if (!encuestaActual || !encuestaActual.Preguntas) return respuestas;
-
-    encuestaActual.Preguntas.forEach((pregunta) => {
-        const preguntaId = pregunta.PreguntaID;
-        const checkboxes = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
-        checkboxes.forEach(cb => {
-            respuestas.push({
-                OpcionID: parseInt(cb.value), // solo OpcionID
-                Seleccionado: 1
-            });
-        });
-    });
-
-    return respuestas;
 }
 
 
@@ -272,9 +254,38 @@ async function enviarRespuestas(event) {
     }
 }
 
+function recopilarRespuestas() {
+    const respuestas = [];
+
+    if (!encuestaActual || !encuestaActual.Preguntas) return respuestas;
+
+    encuestaActual.Preguntas.forEach((pregunta) => {
+        const preguntaId = pregunta.PreguntaID;
+        let seleccionados = [];
+
+        if (pregunta.Tipo === 'multiple') {
+            // Checkbox
+            seleccionados = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
+        } else {
+            // Radio
+            const radio = document.querySelector(`input[name="pregunta_${preguntaId}"]:checked`);
+            if (radio) seleccionados = [radio];
+        }
+
+        seleccionados.forEach((input) => {
+            respuestas.push({
+                PreguntaID: preguntaId,
+                OpcionID: parseInt(input.value),
+                Seleccionado: 1
+            });
+        });
+    });
+
+    return respuestas;
+}
 
 
-    
+
 // Funciones para cargar resultados
 async function cargarResultados() {
     const encuestaId = document.getElementById('resultados-id').value;
