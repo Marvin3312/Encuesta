@@ -247,7 +247,6 @@ async function enviarRespuestas(event) {
         
     } catch (error) {
         console.error('Error al enviar respuestas:', error);
-        mostrarError('error-encuesta', `Error al enviar respuestas: ${error.message}`);
     } finally {
         btnEnviar.innerHTML = textoOriginal;
         btnEnviar.disabled = false;
