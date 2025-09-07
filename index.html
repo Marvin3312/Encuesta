@@ -27,13 +27,18 @@
                 <div class="card">
                     <h2>Encuesta</h2>
                     <div class="input-group">
-                        <label for="encuesta-id">ID de la Encuesta:</label>
-                        <input type="number" id="encuesta-id" placeholder="Ingresa el ID de la encuesta">
+                        <label for="encuesta-id">Encuesta:</label>
+                        <select id="encuesta-id">
+                            <option value="" disabled selected>Selecciona una encuesta</option>
+                            <option value="3">Encuesta de Resolución de Dudas</option>
+                            <option value="2">Encuesta de Habilidades y Destrezas</option>
+                            <option value="1">Encuesta de Conocimiento y Dominio</option>
+                        </select>
                         <button id="btn-cargar-encuesta" class="btn btn-primary">
                             <i class="fas fa-download"></i> Cargar Encuesta
                         </button>
                     </div>
-                    
+
                     <div id="loading-encuesta" class="loading hidden">
                         <i class="fas fa-spinner fa-spin"></i> Cargando encuesta...
                     </div>
@@ -59,8 +64,13 @@
                 <div class="card">
                     <h2>Resultados de la Encuesta</h2>
                     <div class="input-group">
-                        <label for="resultados-id">ID de la Encuesta:</label>
-                        <input type="number" id="resultados-id" placeholder="Ingresa el ID de la encuesta">
+                        <label for="resultados-id">Encuesta:</label>
+                        <select id="resultados-id">
+                            <option value="" disabled selected>Selecciona una encuesta</option>
+                            <option value="3">Encuesta de Resolución de Dudas</option>
+                            <option value="2">Encuesta de Habilidades y Destrezas</option>
+                            <option value="1">Encuesta de Conocimiento y Dominio</option>
+                        </select>
                         <button id="btn-cargar-resultados" class="btn btn-primary">
                             <i class="fas fa-chart-line"></i> Ver Resultados
                         </button>

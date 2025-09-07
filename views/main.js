@@ -81,7 +81,7 @@ async function cargarEncuesta() {
     const encuestaId = document.getElementById('encuesta-id').value;
     
     if (!encuestaId) {
-        mostrarError('error-encuesta', 'Por favor ingresa un ID de encuesta válido.');
+        mostrarError('error-encuesta', 'Por favor seleccione una encuesta.');
         return;
     }
     
@@ -115,7 +115,21 @@ function mostrarEncuesta(encuesta) {
     // Mostrar título y descripción
     document.getElementById('titulo-encuesta').textContent = encuesta.Nombre || 'Encuesta sin título';
     document.getElementById('descripcion-encuesta').textContent = encuesta.Descripcion || 'Sin descripción';
-    
+
+    // Insertar campo de Usuario (si no existe ya)
+    const form = document.getElementById('form-respuestas');
+    let usuarioGroup = document.getElementById('usuario-group');
+    if (!usuarioGroup) {
+        usuarioGroup = document.createElement('div');
+        usuarioGroup.className = 'input-group';
+        usuarioGroup.id = 'usuario-group';
+        usuarioGroup.innerHTML = `
+            <label for="usuario-id">Usuario:</label>
+            <input type="text" id="usuario-id" placeholder="Ingresa tu usuario" required>
+        `;
+        form.insertBefore(usuarioGroup, form.firstChild);
+    }
+
     // Generar preguntas
     const preguntasContainer = document.getElementById('preguntas-container');
     preguntasContainer.innerHTML = '';
@@ -145,21 +159,22 @@ function crearElementoPregunta(pregunta, index) {
     opciones.className = 'opciones';
     
     if (pregunta.Opciones && pregunta.Opciones.length > 0) {
-        pregunta.Opciones.forEach((opcion, opcionIndex) => {
+        pregunta.Opciones.forEach((opcion) => {
             const opcionDiv = document.createElement('div');
             opcionDiv.className = 'opcion';
             
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = `pregunta_${pregunta.PreguntaID}`;
-            radio.value = opcion.OpcionID;
-            radio.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
+            // ✅ AHORA ES CHECKBOX
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = `pregunta_${pregunta.PreguntaID}[]`;
+            checkbox.value = opcion.OpcionID;
+            checkbox.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
             
             const label = document.createElement('label');
-            label.htmlFor = radio.id;
+            label.htmlFor = checkbox.id;
             label.textContent = opcion.TextoOpcion || 'Opción sin texto';
             
-            opcionDiv.appendChild(radio);
+            opcionDiv.appendChild(checkbox);
             opcionDiv.appendChild(label);
             opciones.appendChild(opcionDiv);
         });
@@ -170,7 +185,6 @@ function crearElementoPregunta(pregunta, index) {
     div.appendChild(opciones);
     return div;
 }
-
 // Enviar respuestas
 async function enviarRespuestas(event) {
     event.preventDefault();
@@ -179,7 +193,17 @@ async function enviarRespuestas(event) {
         mostrarError('error-encuesta', 'No hay una encuesta cargada.');
         return;
     }
-    
+
+    // Validar usuario obligatorio
+    const usuarioInput = document.getElementById('usuario-id');
+    const usuarioId = usuarioInput && typeof usuarioInput.value === 'string' ? usuarioInput.value.trim() : '';
+
+    if (!usuarioId) {
+        mostrarError('error-encuesta', 'Por favor ingresa tu usuario.');
+        if (usuarioInput) usuarioInput.focus();
+        return;
+    }
+
     const respuestas = recopilarRespuestas();
     
     if (respuestas.length === 0) {
@@ -199,7 +223,7 @@ async function enviarRespuestas(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                UsuarioID: "cgonzalezr11",
+                UsuarioID: usuarioId,
                 Respuestas: respuestas
             })
         });
@@ -289,7 +313,7 @@ function mostrarResultados(resumen) {
     // Generar resumen
     const resumenContainer = document.getElementById('resumen-container');
     resumenContainer.innerHTML = '';
-    
+
     if (resumen.Preguntas && resumen.Preguntas.length > 0) {
         resumen.Preguntas.forEach(resultado => {
             const resultadoElement = crearElementoResultado(resultado);
@@ -324,9 +348,19 @@ function crearElementoResultado(resultado) {
     const indicador = document.createElement('div');
     indicador.className = 'indicador';
     indicador.innerHTML = resultado.Carita || '';
-    
+
+    // Mostrar Número de usuarios que respondieron (reutilizando estilo "porcentaje")
+    const responded = typeof resultado.NumeroUsuariosRespondieron === 'number'
+        ? resultado.NumeroUsuariosRespondieron
+        : (parseInt(resultado.NumeroUsuariosRespondieron, 10) || 0);
+
+    const respondedElement = document.createElement('div');
+    respondedElement.className = 'porcentaje estado-bueno';
+    respondedElement.textContent = `${responded} usuarios`;
+
     stats.appendChild(porcentajeElement);
     stats.appendChild(indicador);
+    stats.appendChild(respondedElement);
     div.appendChild(stats);
     
     return div;
