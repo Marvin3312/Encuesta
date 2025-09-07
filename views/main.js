@@ -150,30 +150,32 @@ function mostrarEncuesta(encuesta) {
 function crearElementoPregunta(pregunta, index) {
     const div = document.createElement('div');
     div.className = 'pregunta';
-    
+
+    // Título de la pregunta
     const titulo = document.createElement('h4');
     titulo.textContent = `${index + 1}. ${pregunta.TextoPregunta || 'Pregunta sin texto'}`;
     div.appendChild(titulo);
-    
+
+    // Contenedor de opciones
     const opciones = document.createElement('div');
     opciones.className = 'opciones';
-    
+
     if (pregunta.Opciones && pregunta.Opciones.length > 0) {
         pregunta.Opciones.forEach((opcion) => {
             const opcionDiv = document.createElement('div');
             opcionDiv.className = 'opcion';
-            
-            // ✅ AHORA ES CHECKBOX
+
+            // Checkbox correcto para selección múltiple
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.name = `pregunta_${pregunta.PreguntaID}[]`;
+            checkbox.name = `pregunta_${pregunta.PreguntaID}[]`; // permite múltiples
             checkbox.value = opcion.OpcionID;
             checkbox.id = `pregunta_${pregunta.PreguntaID}_opcion_${opcion.OpcionID}`;
-            
+
             const label = document.createElement('label');
             label.htmlFor = checkbox.id;
             label.textContent = opcion.TextoOpcion || 'Opción sin texto';
-            
+
             opcionDiv.appendChild(checkbox);
             opcionDiv.appendChild(label);
             opciones.appendChild(opcionDiv);
@@ -181,10 +183,32 @@ function crearElementoPregunta(pregunta, index) {
     } else {
         opciones.innerHTML = '<p>Esta pregunta no tiene opciones disponibles.</p>';
     }
-    
+
     div.appendChild(opciones);
     return div;
 }
+
+function recopilarRespuestas() {
+    const respuestas = [];
+
+    if (!encuestaActual || !encuestaActual.Preguntas) return respuestas;
+
+    encuestaActual.Preguntas.forEach((pregunta) => {
+        const preguntaId = pregunta.PreguntaID;
+        // Selecciona todos los checkboxes marcados de esta pregunta
+        const checkboxes = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
+        checkboxes.forEach(cb => {
+            respuestas.push({
+                PreguntaID: preguntaId,
+                OpcionID: parseInt(cb.value),
+                Seleccionado: 1
+            });
+        });
+    });
+
+    return respuestas;
+}
+
 // Enviar respuestas
 async function enviarRespuestas(event) {
     event.preventDefault();
