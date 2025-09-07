@@ -1,6 +1,16 @@
-PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> npm run deploy
-npm error code EJSONPARSE
-npm error JSON.parse Invalid package.json: JSONParseError: Expected double-quoted property name in JSON at position 635 (line 23 column 55) while parsing near "...github.io/Encuesta\",,\n  \"devDependencies..."
-npm error JSON.parse Failed to parse JSON data.
-npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.
-npm error A complete log of this run can be found in: C:\Users\marvi\AppData\Local\npm-cache\_logs\2025-09-07T02_44_01_666Z-debug-0.log
+quiero que al llenar el fomrulario de encuesta tenga seleccion multiple,
+errores PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> git pull origin main
+remote: Enumerating objects: 13, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 7 (delta 4), reused 7 (delta 4), pack-reused 0 (from 0)
+Unpacking objects: 100% (7/7), 1.63 KiB | 12.00 KiB/s, done.
+From https://github.com/Marvin3312/Encuesta
+ * branch            main       -> FETCH_HEAD
+   a7df524..3308a98  main       -> origin/main
+Updating a7df524..3308a98
+error: Your local changes to the following files would be overwritten by merge:
+        views/main.js
+Please commit your changes or stash them before you merge.
+Aborting
+PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> npm run proxy   
