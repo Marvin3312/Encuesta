@@ -54,11 +54,6 @@ function inicializarEventListeners() {
         }
     });
 
-    console.log('JSON a enviar:', {
-    UsuarioID: usuarioId,
-    Respuestas: respuestas
-});
-
 }
 
 // Navegación entre secciones
@@ -201,12 +196,10 @@ function recopilarRespuestas() {
 
     encuestaActual.Preguntas.forEach((pregunta) => {
         const preguntaId = pregunta.PreguntaID;
-        // Selecciona todos los checkboxes marcados de esta pregunta
         const checkboxes = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
         checkboxes.forEach(cb => {
             respuestas.push({
-                PreguntaID: preguntaId,
-                OpcionID: parseInt(cb.value),
+                OpcionID: parseInt(cb.value), // solo OpcionID
                 Seleccionado: 1
             });
         });
@@ -214,6 +207,7 @@ function recopilarRespuestas() {
 
     return respuestas;
 }
+
 
 // Enviar respuestas
 async function enviarRespuestas(event) {
@@ -278,30 +272,9 @@ async function enviarRespuestas(event) {
     }
 }
 
-function recopilarRespuestas() {
-    const respuestas = [];
-    
-    if (!encuestaActual || !encuestaActual.Preguntas) return respuestas;
-    
-    encuestaActual.Preguntas.forEach((pregunta) => {
-        const preguntaId = pregunta.PreguntaID;
-        const checkboxes = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
-        
-        checkboxes.forEach(checkbox => {
-            respuestas.push({
-                OpcionID: parseInt(checkbox.value),
-                Seleccionado: 1
-            });
-        });
-    });
-    
-
-    
-    return respuestas;
-}
 
 
-
+    
 // Funciones para cargar resultados
 async function cargarResultados() {
     const encuestaId = document.getElementById('resultados-id').value;
