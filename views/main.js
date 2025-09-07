@@ -229,7 +229,7 @@ async function enviarRespuestas(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                UsuarioID: usuarioId,
+                UsuarioID: 'cgonzalezr11',
                 Respuestas: respuestas
             })
         });
