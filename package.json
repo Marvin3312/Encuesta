@@ -1,0 +1,27 @@
+{
+  "name": "encuestaweb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "echo No build step required",
+    "deploy": "gh-pages -d .",
+    "proxy": "node proxy-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marvin3312/Encuesta.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marvin3312/Encuesta/issues"
+  },
+  "homepage": "https://github.com/Marvin3312/Encuesta#readme",
+  "description": "",
+  "homepage": "https://Marvin3312.github.io/Encuesta",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}

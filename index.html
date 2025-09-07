@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Encuestas</title>
+    <link rel="stylesheet" href="views/assets/index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-poll"></i> Sistema de Encuestas</h1>
+            <nav>
+                <button id="btn-ver-encuesta" class="nav-btn active">
+                    <i class="fas fa-list"></i> Ver Encuesta
+                </button>
+                <button id="btn-ver-resultados" class="nav-btn">
+                    <i class="fas fa-chart-bar"></i> Ver Resultados
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Sección para mostrar encuestas -->
+            <section id="seccion-encuesta" class="section active">
+                <div class="card">
+                    <h2>Encuesta</h2>
+                    <div class="input-group">
+                        <label for="encuesta-id">ID de la Encuesta:</label>
+                        <input type="number" id="encuesta-id" placeholder="Ingresa el ID de la encuesta">
+                        <button id="btn-cargar-encuesta" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Cargar Encuesta
+                        </button>
+                    </div>
+                    
+                    <div id="loading-encuesta" class="loading hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando encuesta...
+                    </div>
+                    
+                    <div id="error-encuesta" class="error hidden"></div>
+                    
+                    <div id="contenido-encuesta" class="encuesta-content hidden">
+                        <h3 id="titulo-encuesta"></h3>
+                        <p id="descripcion-encuesta"></p>
+                        
+                        <form id="form-respuestas">
+                            <div id="preguntas-container"></div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Enviar Respuestas
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección para mostrar resultados -->
+            <section id="seccion-resultados" class="section">
+                <div class="card">
+                    <h2>Resultados de la Encuesta</h2>
+                    <div class="input-group">
+                        <label for="resultados-id">ID de la Encuesta:</label>
+                        <input type="number" id="resultados-id" placeholder="Ingresa el ID de la encuesta">
+                        <button id="btn-cargar-resultados" class="btn btn-primary">
+                            <i class="fas fa-chart-line"></i> Ver Resultados
+                        </button>
+                    </div>
+                    
+                    <div id="loading-resultados" class="loading hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando resultados...
+                    </div>
+                    
+                    <div id="error-resultados" class="error hidden"></div>
+                    
+                    <div id="contenido-resultados" class="resultados-content hidden">
+                        <h3 id="titulo-resultados"></h3>
+                        <div id="resumen-container"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para confirmaciones -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="views/main.js"></script>
+</body>
+</html>

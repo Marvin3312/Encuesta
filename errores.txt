@@ -1,0 +1,6 @@
+PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> npm run deploy
+npm error code EJSONPARSE
+npm error JSON.parse Invalid package.json: JSONParseError: Expected double-quoted property name in JSON at position 635 (line 23 column 55) while parsing near "...github.io/Encuesta\",,\n  \"devDependencies..."
+npm error JSON.parse Failed to parse JSON data.
+npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.
+npm error A complete log of this run can be found in: C:\Users\marvi\AppData\Local\npm-cache\_logs\2025-09-07T02_44_01_666Z-debug-0.log
