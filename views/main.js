@@ -271,12 +271,11 @@ async function enviarRespuestas(event) {
         btnEnviar.disabled = false;
     }
 }
+
 function recopilarRespuestas() {
     const respuestas = [];
     
-    if (!encuestaActual || !encuestaActual.Preguntas) {
-        return respuestas;
-    }
+    if (!encuestaActual || !encuestaActual.Preguntas) return respuestas;
     
     encuestaActual.Preguntas.forEach((pregunta) => {
         const preguntaId = pregunta.PreguntaID;
@@ -292,6 +291,7 @@ function recopilarRespuestas() {
     
     return respuestas;
 }
+
 
 
 // Funciones para cargar resultados
