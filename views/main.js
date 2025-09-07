@@ -53,6 +53,12 @@ function inicializarEventListeners() {
             cargarResultados();
         }
     });
+
+    console.log('JSON a enviar:', {
+    UsuarioID: usuarioId,
+    Respuestas: respuestas
+});
+
 }
 
 // Navegación entre secciones
@@ -288,6 +294,8 @@ function recopilarRespuestas() {
             });
         });
     });
+    
+
     
     return respuestas;
 }
