@@ -97,7 +97,8 @@ async function cargarEncuesta() {
         
         const rawResponse = await response.json();
         console.log('Respuesta de la API:', rawResponse);
-        const encuesta = JSON.parse(rawResponse.data[0][0].JsonResult);
+        const jsonResult = rawResponse.data && rawResponse.data[0] && rawResponse.data[0][0] ? rawResponse.data[0][0].JsonResult : null;
+        const encuesta = jsonResult ? JSON.parse(jsonResult) : null;
         encuestaActual = encuesta;
         
         mostrarEncuesta(encuesta);
@@ -264,7 +265,12 @@ async function cargarResultados() {
             throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
-        const resumen = await response.json();
+        const responseText = await response.text();
+        const resumen = responseText ? JSON.parse(responseText) : null;
+
+        if (!resumen) {
+            throw new Error('La respuesta del servidor está vacía o no es válida.');
+        }
         
         mostrarResultados(resumen);
         
