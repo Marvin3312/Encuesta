@@ -1,35 +1,16 @@
-// index.js
-require('dotenv').config();
-const express = require('express');
-const sql = require('mssql');
-const cors = require('cors');
-
-const app = express();
-
-app.use(
-    cors({
-        origin: ['https://marvin3312.github.io'],
-        methods: ['GET', 'POST', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        optionsSuccessStatus: 204
-    })
-);
-
-app.use(express.json());
-
-// Configuración SQL Server
-const sqlConfig = {
-    user: process.env.DB_USER || 'UsuarioEncuestas',
-    password: process.env.DB_PASS || 'DesaWeb2025$!',
-    server: process.env.DB_HOST || 'svr-sql-ctezo.southcentralus.cloudapp.azure.com',
-    database: process.env.DB_NAME || 'db_WebDevUMG',
-    options: {
-        encrypt: true,
-        trustServerCertificate: true
-    },
-    pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000
-    }
-};
+quiero que al llenar el fomrulario de encuesta tenga seleccion multiple,
+errores PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> git pull origin main
+remote: Enumerating objects: 13, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 7 (delta 4), reused 7 (delta 4), pack-reused 0 (from 0)
+Unpacking objects: 100% (7/7), 1.63 KiB | 12.00 KiB/s, done.
+From https://github.com/Marvin3312/Encuesta
+ * branch            main       -> FETCH_HEAD
+   a7df524..3308a98  main       -> origin/main
+Updating a7df524..3308a98
+error: Your local changes to the following files would be overwritten by merge:
+        views/main.js
+Please commit your changes or stash them before you merge.
+Aborting
+PS C:\Users\marvi\OneDrive\Documents\EncuestaWeb> npm run proxy   

@@ -199,7 +199,7 @@ async function enviarRespuestas(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                UsuarioID: "cgonzalezr11", // Temporal
+                UsuarioID: "cgonzalezr11",
                 Respuestas: respuestas
             })
         });
@@ -223,7 +223,6 @@ async function enviarRespuestas(event) {
         btnEnviar.disabled = false;
     }
 }
-
 function recopilarRespuestas() {
     const respuestas = [];
     
@@ -231,20 +230,21 @@ function recopilarRespuestas() {
         return respuestas;
     }
     
-    encuestaActual.Preguntas.forEach((pregunta, index) => {
+    encuestaActual.Preguntas.forEach((pregunta) => {
         const preguntaId = pregunta.PreguntaID;
-        const radioSeleccionado = document.querySelector(`input[name="pregunta_${preguntaId}"]:checked`);
+        const checkboxes = document.querySelectorAll(`input[name="pregunta_${preguntaId}[]"]:checked`);
         
-        if (radioSeleccionado) {
+        checkboxes.forEach(checkbox => {
             respuestas.push({
-                OpcionID: parseInt(radioSeleccionado.value),
+                OpcionID: parseInt(checkbox.value),
                 Seleccionado: 1
             });
-        }
+        });
     });
     
     return respuestas;
 }
+
 
 // Funciones para cargar resultados
 async function cargarResultados() {
