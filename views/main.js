@@ -1,9 +1,6 @@
+
 // Configuración de la API
-const API_BASE_URL = 'http://localhost:3000/api'; 
-
-API_BASE_URL == true;
-
-// Cambiar por la URL real de tu API
+const API_BASE_URL = 'http://localhost:3001/api';
 
 // Variables globales
 let encuestaActual = null;
@@ -98,7 +95,9 @@ async function cargarEncuesta() {
             throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
-        const encuesta = await response.json();
+        const rawResponse = await response.json();
+        console.log('Respuesta de la API:', rawResponse);
+        const encuesta = JSON.parse(rawResponse.data[0][0].JsonResult);
         encuestaActual = encuesta;
         
         mostrarEncuesta(encuesta);
@@ -193,13 +192,13 @@ async function enviarRespuestas(event) {
     btnEnviar.disabled = true;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/respuestas`, {
+        const response = await fetch(`${API_BASE_URL}/encuestas/responder`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                EncuestaID: encuestaActual.EncuestaID,
+                UsuarioID: "cgonzalezr11", // Temporal
                 Respuestas: respuestas
             })
         });
@@ -237,8 +236,8 @@ function recopilarRespuestas() {
         
         if (radioSeleccionado) {
             respuestas.push({
-                PreguntaID: preguntaId,
-                OpcionID: parseInt(radioSeleccionado.value)
+                OpcionID: parseInt(radioSeleccionado.value),
+                Seleccionado: 1
             });
         }
     });
@@ -259,7 +258,7 @@ async function cargarResultados() {
     ocultarElementos(['error-resultados', 'contenido-resultados']);
     
     try {
-        const response = await fetch(`${API_BASE_URL}/encuestas/${encuestaId}/resumen`);
+        const response = await fetch(`${API_BASE_URL}/encuestas/resumen/${encuestaId}`);
         
         if (!response.ok) {
             throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -279,14 +278,14 @@ async function cargarResultados() {
 
 function mostrarResultados(resumen) {
     // Mostrar título
-    document.getElementById('titulo-resultados').textContent = resumen.titulo || 'Resultados de la Encuesta';
+    document.getElementById('titulo-resultados').textContent = resumen.Encuesta || 'Resultados de la Encuesta';
     
     // Generar resumen
     const resumenContainer = document.getElementById('resumen-container');
     resumenContainer.innerHTML = '';
     
-    if (resumen.resultados && resumen.resultados.length > 0) {
-        resumen.resultados.forEach(resultado => {
+    if (resumen.Preguntas && resumen.Preguntas.length > 0) {
+        resumen.Preguntas.forEach(resultado => {
             const resultadoElement = crearElementoResultado(resultado);
             resumenContainer.appendChild(resultadoElement);
         });
@@ -304,45 +303,27 @@ function crearElementoResultado(resultado) {
     
     const pregunta = document.createElement('div');
     pregunta.className = 'resultado-pregunta';
-    pregunta.textContent = resultado.pregunta || 'Pregunta sin título';
+    pregunta.textContent = resultado.TextoPregunta || 'Pregunta sin título';
     div.appendChild(pregunta);
     
     const stats = document.createElement('div');
     stats.className = 'resultado-stats';
     
-    // Calcular porcentaje (asumiendo que viene en el resultado o calcularlo)
-    const porcentaje = resultado.porcentaje || calcularPorcentaje(resultado);
+    const porcentaje = Math.round(resultado.Porcentaje || 0);
     
-    // Crear elemento de porcentaje
     const porcentajeElement = document.createElement('div');
     porcentajeElement.className = `porcentaje ${obtenerClaseEstado(porcentaje)}`;
     porcentajeElement.textContent = `${porcentaje}%`;
     
-    // Crear indicador visual
     const indicador = document.createElement('div');
     indicador.className = 'indicador';
-    indicador.innerHTML = obtenerIndicadorVisual(porcentaje);
+    indicador.innerHTML = resultado.Carita || '';
     
     stats.appendChild(porcentajeElement);
     stats.appendChild(indicador);
     div.appendChild(stats);
     
     return div;
-}
-
-function calcularPorcentaje(resultado) {
-    // Si el resultado ya tiene porcentaje, usarlo
-    if (resultado.porcentaje !== undefined) {
-        return Math.round(resultado.porcentaje);
-    }
-    
-    // Si tiene respuestas positivas y totales, calcular
-    if (resultado.respuestasPositivas !== undefined && resultado.totalRespuestas !== undefined) {
-        return Math.round((resultado.respuestasPositivas / resultado.totalRespuestas) * 100);
-    }
-    
-    // Valor por defecto
-    return 0;
 }
 
 function obtenerClaseEstado(porcentaje) {
@@ -352,28 +333,6 @@ function obtenerClaseEstado(porcentaje) {
         return 'estado-bueno';
     } else {
         return 'estado-malo';
-    }
-}
-
-function obtenerIndicadorVisual(porcentaje) {
-    if (porcentaje >= 60) {
-        return `
-            <span class="emoji-feliz"></span>
-            <i class="fas fa-circle semaforo-verde"></i>
-            <span>Excelente</span>
-        `;
-    } else if (porcentaje >= 30) {
-        return `
-            <span class="emoji-serio"></span>
-            <i class="fas fa-circle semaforo-amarillo"></i>
-            <span>Regular</span>
-        `;
-    } else {
-        return `
-            <span class="emoji-triste"></span>
-            <i class="fas fa-circle semaforo-rojo"></i>
-            <span>Necesita mejora</span>
-        `;
     }
 }
 
@@ -414,71 +373,3 @@ function mostrarModal(titulo, mensaje) {
 function cerrarModal() {
     ocultarElemento('modal');
 }
-
-// Función para simular datos cuando la API no esté disponible
-function simularDatosEncuesta(id) {
-    // Devolver la encuesta proporcionada por el usuario, ignorando el ID.
-    return {
-      "EncuestaID": 1,
-      "Nombre": "Encuesta de Conocimiento y Dominio",
-      "Descripcion": "Evalúa si el catedrático demuestra dominio y usa recursos adecuados.",
-      "Preguntas": [{"PreguntaID":1,"TextoPregunta":"¿Qué recursos tecnológicos brinda el catedrático para impartir el curso?","Opciones":[{"OpcionID":1,"TextoOpcion":"Ejercicios prácticos resueltos"},{"OpcionID":2,"TextoOpcion":"Presentaciones y diapositivas"},{"OpcionID":3,"TextoOpcion":"Recursos tecnológicos como APIs o simuladores"},{"OpcionID":4,"TextoOpcion":"Videos explicativos"},{"OpcionID":5,"TextoOpcion":"Foros o plataformas de discusión"},{"OpcionID":6,"TextoOpcion":"No brinda nada"},{"OpcionID":91,"TextoOpcion":"Aplicaciones de ejemplo"}]},{"PreguntaID":2,"TextoPregunta":"¿Qué estrategias usa para explicar los temas?","Opciones":[{"OpcionID":7,"TextoOpcion":"Ejemplos prácticos en clase"},{"OpcionID":8,"TextoOpcion":"Analogías y casos reales"},{"OpcionID":9,"TextoOpcion":"Demostraciones en vivo"},{"OpcionID":10,"TextoOpcion":"Material escrito complementario"},{"OpcionID":11,"TextoOpcion":"Sesiones grabadas"},{"OpcionID":12,"TextoOpcion":"No utiliza ninguna estrategia clara"}]},{"PreguntaID":3,"TextoPregunta":"¿Qué materiales de apoyo entrega en clase?","Opciones":[{"OpcionID":13,"TextoOpcion":"Guías de estudio"},{"OpcionID":14,"TextoOpcion":"Banco de ejercicios"},{"OpcionID":15,"TextoOpcion":"Manuales o tutoriales"},{"OpcionID":16,"TextoOpcion":"Acceso a bibliografía digital"},{"OpcionID":17,"TextoOpcion":"Plantillas de trabajo"},{"OpcionID":18,"TextoOpcion":"No entrega materiales"}]},{"PreguntaID":4,"TextoPregunta":"¿Qué herramientas usa para evaluar el aprendizaje?","Opciones":[{"OpcionID":19,"TextoOpcion":"Exámenes cortos"},{"OpcionID":20,"TextoOpcion":"Quices prácticos en clase"},{"OpcionID":21,"TextoOpcion":"Trabajos de investigación"},{"OpcionID":22,"TextoOpcion":"Evaluaciones con software especializado"},{"OpcionID":23,"TextoOpcion":"Rúbricas de evaluación claras"},{"OpcionID":24,"TextoOpcion":"No utiliza herramientas de evaluación"}]},{"PreguntaID":5,"TextoPregunta":"¿Qué medios utiliza para mantener actualizados los contenidos?","Opciones":[{"OpcionID":25,"TextoOpcion":"Lecturas recientes de la materia"},{"OpcionID":26,"TextoOpcion":"Enlaces a artículos académicos"},{"OpcionID":27,"TextoOpcion":"Uso de software actualizado"},{"OpcionID":28,"TextoOpcion":"Referencias a normativas vigentes"},{"OpcionID":29,"TextoOpcion":"Comparación con tendencias actuales"},{"OpcionID":30,"TextoOpcion":"No actualiza los contenidos"}]}]
-    };
-}
-
-function simularDatosResultados(id) {
-    // Devuelve un conjunto de resultados vacío para la simulación.
-    return {
-        id: id,
-        titulo: `Resultados de Encuesta ${id}`,
-        resultados: []
-    };
-}
-
-// Comentar estas líneas cuando la API esté disponible
-// Función temporal para probar sin API
-window.probarSinAPI = function() {
-    console.log('Modo de prueba activado - usando datos simulados');
-    
-    // Sobrescribir funciones para usar datos simulados
-    window.cargarEncuestaOriginal = cargarEncuesta;
-    window.cargarResultadosOriginal = cargarResultados;
-    
-    cargarEncuesta = async function() {
-        const encuestaId = document.getElementById('encuesta-id').value;
-        if (!encuestaId) {
-            mostrarError('error-encuesta', 'Por favor ingresa un ID de encuesta válido.');
-            return;
-        }
-        
-        mostrarCargando('loading-encuesta');
-        ocultarElementos(['error-encuesta', 'contenido-encuesta']);
-        
-        setTimeout(() => {
-            const encuesta = simularDatosEncuesta(encuestaId);
-            encuestaActual = encuesta;
-            mostrarEncuesta(encuesta);
-            ocultarElemento('loading-encuesta');
-        }, 1000);
-    };
-    
-    cargarResultados = async function() {
-        const encuestaId = document.getElementById('resultados-id').value;
-        if (!encuestaId) {
-            mostrarError('error-resultados', 'Por favor ingresa un ID de encuesta válido.');
-            return;
-        }
-        
-        mostrarCargando('loading-resultados');
-        ocultarElementos(['error-resultados', 'contenido-resultados']);
-        
-        setTimeout(() => {
-            const resumen = simularDatosResultados(encuestaId);
-            mostrarResultados(resumen);
-            ocultarElemento('loading-resultados');
-        }, 1000);
-    };
-};
-
-// Activar modo de prueba automáticamente (comentar cuando la API esté lista)
-window.probarSinAPI();
