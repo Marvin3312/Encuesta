@@ -1,6 +1,6 @@
 
 // Configuración de la API
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://back-end-encuestas-a5fxb8g7gwavevgh.canadacentral-01.azurewebsites.net/api';
 
 // Variables globales
 let encuestaActual = null;
